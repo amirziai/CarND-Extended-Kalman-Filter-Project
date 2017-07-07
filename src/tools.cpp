@@ -55,13 +55,16 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
     double c2 = sqrt(c1);
     double c3 = c1 * c2;
 
-    if (fabs(c1) > 0.00001) {
-        Hj <<   (px / c2), (py / c2), 0, 0,
-                -(py / c1), (px / c1), 0, 0,
-                py * (vx * py - vy * px) / c3, px * (px * vy - py * vx), px / c2, py / c2;
+    //check division by zero
+    if(fabs(c1) < 0.0001){
+        std::cout << "CalculateJacobian () - Error - Division by Zero" << std::endl;
         return Hj;
     }
 
-    std::cout << "CalculateJacobian () - Error - Underflow. Zero out the Jacobian" << std::endl;
+    //compute the Jacobian matrix
+    Hj << (px/c2), (py/c2), 0, 0,
+            -(py/c1), (px/c1), 0, 0,
+            py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3, px/c2, py/c2;
+
     return Hj;
 }
